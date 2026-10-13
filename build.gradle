@@ -1,0 +1,40 @@
+plugins {
+    id 'java'
+}
+
+group = 'local.burp.extensions'
+version = '1.0.0'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compileOnly 'net.portswigger.burp.extensions:montoya-api:2026.7'
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.19.2'
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.13.4'
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
+tasks.withType(Test).configureEach {
+    useJUnitPlatform()
+}
+
+tasks.jar {
+    archiveBaseName = 'nextjs-server-actions-inspector'
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    from {
+        configurations.runtimeClasspath.collect { dependency ->
+            dependency.isDirectory() ? dependency : zipTree(dependency)
+        }
+    }
+    manifest {
+        attributes('Implementation-Title': 'Next.js Server Actions Inspector',
+                'Implementation-Version': project.version)
+    }
+}
